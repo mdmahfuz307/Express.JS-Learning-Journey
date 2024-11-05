@@ -1,4 +1,4 @@
-## **Working With Multipart Form Data**
+## File Upload
 
 **Multer npm Install**
 
@@ -9,73 +9,96 @@ npm install --save multer
 ```jsx
 let express = require('express');
 let multer = require('multer');
-let multer = multer();
-
 let app = express();
-// for parsing multipart/form-data
-app.use(multer.array());
-app.use(express.static('public'));
 
-app.post("/",function(req,res){
+let storage = multer.diskStorage({
 
-    let ReqBody = req.body;
-
-    res.send(JSON.stringify(ReqBody));
-
+    destination:function (req,file,callback) {
+        callback(null,'./uploads');
+    },
+    filename:function (req,file,callback){
+        callback(null,file.originalname);
+    }
 });
 
-// Postman e giye Body te jabo than form-data select kore key and value add korbo
+// PostMan r giye Body te jbo than Form-data select kore KEY er name dlm (myfile) KEY er type dbo File thaa VALUE te select Files e giye file upload dye debo.
+let upload = multer({storage:storage}).single('myfile');
+app.post("/",function(req,res){
+
+    upload(req,res,function(error){
+        if(error){
+            return res.end("Error uploading file");
+        }
+        else{
+        res.end("File is uploaded successfully!");
+        }
+    });
+});
 
 app.listen(8000,function(){
     console.log("Server Run Success");
 });
 ```
 
-এই কোডটি একটি **Express.js** সার্ভার তৈরি করেছে যা **multipart/form-data** ফরম্যাটে পাঠানো ডেটা গ্রহণ করে। এটি **Postman** এর মাধ্যমে ফাইল আপলোড এবং ফরম্যাটেড ডেটা প্রেরণ করার জন্য উপযোগী। নিচে প্রতিটি অংশের ব্যাখ্যা দেওয়া হলো:
+এই কোডটি একটি **Express.js** অ্যাপ্লিকেশন তৈরি করেছে যা **Multer** লাইব্রেরি ব্যবহার করে ফাইল আপলোড করার কাজ করে। নিচে কোডের প্রতিটি অংশের ব্যাখ্যা দেওয়া হলো:
 
 ```jsx
 let express = require('express');
 let multer = require('multer');
-let multer = multer();
-
-```
-
-- প্রথমে `express` এবং `multer` লাইব্রেরিগুলোকে প্রয়োজনীয় মডিউল হিসেবে আনা হয়েছে।
-- `multer` লাইব্রেরিটি ফাইল আপলোডের জন্য ব্যবহৃত হয় এবং এখানে `multer()` ফাংশনটি ব্যবহার করে একটি **multer** ইনস্ট্যান্স তৈরি করা হয়েছে।
-
-```jsx
 let app = express();
-// for parsing multipart/form-data
-app.use(multer.array());
-app.use(express.static('public'));
 
 ```
 
-- `app` নামে একটি এক্সপ্রেস অ্যাপ্লিকেশন তৈরি করা হয়েছে।
-- `app.use(multer.array())` ব্যবহার করে **multipart/form-data** ফরম্যাটে আসা ডেটা পার্স করার জন্য মুলটারকে কনফিগার করা হয়েছে। এটি ফর্মের মাধ্যমে একাধিক ফাইল বা ডেটা গ্রহণের অনুমতি দেয়।
-- `app.use(express.static('public'))` লাইনটি `public` নামক একটি ফোল্ডারকে স্ট্যাটিক ফাইল সার্ভ করার জন্য নির্ধারণ করেছে। এই ফোল্ডারে থাকা ফাইলগুলো সরাসরি ক্লায়েন্টের কাছে প্রদর্শন করা যাবে।
+- এখানে প্রথমে `express` এবং `multer` লাইব্রেরিগুলোকে ইনপোর্ট করা হয়েছে। `express` ওয়েব সার্ভার তৈরি করার জন্য ব্যবহৃত হয়, আর `multer` ফাইল আপলোড করার জন্য ব্যবহৃত হয়।
+- `app` নামক একটি এক্সপ্রেস অ্যাপ্লিকেশন তৈরি করা হয়েছে।
 
-### POST রিকোয়েস্ট এবং ডেটা গ্রহণ:
+### Storage Configuration
 
 ```jsx
-app.post("/", function(req, res) {
-    let ReqBody = req.body;
-
-    res.send(JSON.stringify(ReqBody));
+let storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, './uploads'); // ফাইলটি কোথায় সেভ হবে তা নির্ধারণ করা
+    },
+    filename: function (req, file, callback) {
+        callback(null, file.originalname); // ফাইলের নাম কী হবে তা নির্ধারণ করা
+    }
 });
 
 ```
 
-- এখানে `/` রুটে একটি **POST** রিকোয়েস্ট সেট করা হয়েছে।
-- যখন ইউজার `/` রুটে **POST** রিকোয়েস্ট পাঠায়, তখন `req.body` থেকে ডেটা সংগ্রহ করা হয় এবং সেটিকে `ReqBody` নামে একটি ভেরিয়েবলে রাখা হয়।
-- `res.send(JSON.stringify(ReqBody))` এর মাধ্যমে `ReqBody` অবজেক্টটিকে JSON স্ট্রিং এ রূপান্তর করে রেসপন্স হিসেবে ক্লায়েন্টের কাছে পাঠানো হচ্ছে।
+- `multer.diskStorage()` ফাংশনের মাধ্যমে একটি স্টোরেজ কনফিগারেশন তৈরি করা হয়েছে।
+- `destination` ফাংশনটি নির্দেশ করে যে আপলোড করা ফাইলটি `uploads` ফোল্ডারে সংরক্ষিত হবে।
+- `filename` ফাংশনটি ফাইলের নাম নির্ধারণ করে। এখানে `file.originalname` ব্যবহার করা হয়েছে, যা আপলোড করা ফাইলের আসল নাম ধরে রাখবে।
 
-### Postman ব্যবহার করে ডেটা পাঠানো:
+### File Upload Endpoint
 
-- Postman এ **Body** সেকশনে গিয়ে **form-data** সিলেক্ট করতে হবে।
-- এখানে **key** এবং **value** জোড়া হিসেবে ডেটা প্রদান করতে হবে, যা সার্ভারে পাঠানো হবে।
+```jsx
+let upload = multer({ storage: storage }).single('myfile');
+app.post("/", function(req, res) {
+    upload(req, res, function(error) {
+        if (error) {
+            return res.end("Error uploading file");
+        } else {
+            res.end("File is uploaded successfully!");
+        }
+    });
+});
 
-### সার্ভার চালানো:
+```
+
+- `upload` নামক একটি ভেরিয়েবল তৈরি করা হয়েছে, যা `multer` এর কনফিগারেশন ধারণ করছে। এখানে `single('myfile')` বলা হয়েছে, মানে একক ফাইল আপলোড করার জন্য যে ফিল্ডের নাম **myfile**।
+- `app.post("/", function(req, res) {...})` মাধ্যমে `/` রুটে একটি **POST** রিকোয়েস্ট তৈরি করা হয়েছে।
+- `upload(req, res, function(error) {...})` ফাংশনটি ফাইল আপলোডের জন্য ব্যবহৃত হচ্ছে।
+    - যদি আপলোডের সময় কোনো ত্রুটি ঘটে, তাহলে `"Error uploading file"` বার্তা দেখানো হয়।
+    - যদি আপলোড সফল হয়, তাহলে `"File is uploaded successfully!"` বার্তা দেখানো হয়।
+
+### Postman ব্যবহার করে ফাইল আপলোড করা
+
+- Postman এ গেলে **Body** ট্যাবে যেতে হবে এবং **form-data** নির্বাচন করতে হবে।
+- এখানে একটি **key** তৈরি করতে হবে যার নাম হবে `myfile` এবং **type** নির্বাচন করতে হবে **File**।
+- এরপর **Value** সেকশনে ফাইলটি আপলোড করতে হবে।
+
+### সার্ভার শুরু করা
 
 ```jsx
 app.listen(8000, function() {
@@ -85,8 +108,8 @@ app.listen(8000, function() {
 ```
 
 - এই লাইনে সার্ভার **৮০০০** পোর্টে চালু করা হয়েছে।
-- সার্ভার চালু হওয়ার পর কনসোলে `"Server Run Success"` মেসেজটি দেখানো হয়, যা ইঙ্গিত করে যে সার্ভার সফলভাবে চলছে।
+- সার্ভার চালু হওয়ার পর `"Server Run Success"` বার্তাটি কনসোলে প্রদর্শিত হবে, যা নির্দেশ করে যে সার্ভার সফলভাবে চলছে।
 
 ### সংক্ষেপে
 
-এই কোডটি একটি Express.js সার্ভার তৈরি করেছে যা **multipart/form-data** ফরম্যাটে আসা POST রিকোয়েস্ট গ্রহণ করে এবং সেই ডেটাকে JSON স্ট্রিং হিসেবে রেসপন্স দেয়। **Multer** লাইব্রেরিটি এখানে ফাইল আপলোডের জন্য ব্যবহৃত হয়েছে এবং **Postman** দিয়ে ডেটা পাঠানোর জন্য ব্যবস্থা করা হয়েছে।
+এই কোডটি একটি Express.js সার্ভার তৈরি করেছে যা **Multer** লাইব্রেরি ব্যবহার করে ফাইল আপলোড করার জন্য ডিজাইন করা হয়েছে। ব্যবহারকারী Postman এর মাধ্যমে ফাইল আপলোড করে এবং সার্ভার সফলভাবে ফাইলটি গ্রহণ করে একটি বার্তা পাঠায়।

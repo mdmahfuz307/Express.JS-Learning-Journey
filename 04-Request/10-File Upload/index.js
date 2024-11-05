@@ -14,7 +14,8 @@ let storage = multer.diskStorage({
 });
 
 
-// PostMan r giye Body te jbo than Form-data select kore KEY er name dlm (myfile) KEY er type dbo File thaa VALUE te select Files e giye file upload dye debo.
+// PostMan e giye Body te jbo than Form-data select kore KEY er name dlm (myfile) KEY er type dbo File tha VALUE te select Files e giye file upload dye debo.
+
 let upload = multer({storage:storage}).single('myfile');
 app.post("/",function(req,res){
 
@@ -28,8 +29,6 @@ app.post("/",function(req,res){
     });
 });
 
-
-// Postman e giye Body te jabo than form-data select kore key and value add korbo
 
 app.listen(8000,function(){
     console.log("Server Run Success");
