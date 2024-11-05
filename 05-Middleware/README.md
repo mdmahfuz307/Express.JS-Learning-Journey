@@ -4,7 +4,7 @@ Middle + Ware
 মধ্যম  + সতর্কতা
 মাঝখানের সতর্কতা/সচেতনতা
 
-![Screenshot 2024-11-04 195806.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/5a4b045f-ac19-493c-832a-3cb357cda128/64681e84-80f1-4eae-804a-3f722a6403cc/Screenshot_2024-11-04_195806.png)
+![middleware.png](https://github.com/mdmahfuz307/Express.JS-Learning-Journey/blob/master/05-Middleware/Img/middleware.png)
 
 এই ছবিতে একটি সাধারণ ওয়েব অ্যাপ্লিকেশন স্থাপনার মধ্যে **Middleware** বা মধ্যস্থতাকারীর ভূমিকা দেখানো হয়েছে।
 

@@ -7,9 +7,9 @@ app.use(function(req,res,next){
     next();
 })
 
-// app.get('/', function(req, res) {
-//     res.send("This is Home page");
-// });
+app.get('/', function(req, res) {
+    res.send("This is Home page");
+});
 
 app.get('/contact', function(req, res) {
     res.send("This is contact page");
